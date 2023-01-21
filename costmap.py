@@ -46,14 +46,17 @@ class CostMap:
 
         # transform points into costmap corner frame
         h_points_corner = self.corner_to_cm @ self.cm_to_rover @ h_points
+        # h_points_corner = h_points
     
         # convert out of homogenous form
         points_corner = h_points_corner[:2, :]
 
+        # points = points_corner
+
         # get costmap indices to put points at
         # TODO: refactor to reduce unecessary stuff
         ids = np.floor(points / CM_CELL_SIZE).astype(int)
-        valid_mask = np.any(ids < self.num_cells, axis=0) 
+        valid_mask = np.all(ids < self.num_cells, axis=0) 
         valid_ids = ids[:, valid_mask]
         valid_points = points[:, valid_mask]
         

@@ -13,10 +13,14 @@ def plot_costmap(cm: CostMap):
 
 def visualize():
     cm = CostMap()
-    points = np.random.rand(2, 20) * 20
+    points = np.random.rand(2, 20) * 10
     cm.add_new_points(points)
-    plt.plot(points[0, :], points[1, :], "r.")
     plot_costmap(cm)
+    plt.plot(points[0, :], points[1, :], "r.")
+    x = cm.cm_points.reshape(-1, 2).T
+    added_points = x[:, ~np.any(np.isnan(x), axis=0)]
+    print(added_points)
+    plt.plot(added_points[0, :], added_points[1, :], "b.")
     plt.show()
 
 visualize()
