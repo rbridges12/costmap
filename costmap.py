@@ -12,8 +12,10 @@ class CostMap:
     # NxN grid to store cost values
     cm_grid: np.ndarray
 
-    # 2XN array of points underlying grid
+    # NXNx2 array of points underlying grid
     cm_points: np.ndarray
+
+    # TODO: refactor 2xN to Nx2
 
     def __init__(self) -> None:
         
@@ -26,11 +28,12 @@ class CostMap:
         self.corner_to_cm[:2, 2] = [CM_WIDTH / 2, CM_WIDTH / 2]
 
         # determine costmap size from width and cell size, init to zeros
+        # TODO: rename num_cells
         self.num_cells = np.ceil(CM_WIDTH / CM_CELL_SIZE).astype(int)
         self.cm_grid = np.zeros((self.num_cells, self.num_cells))
         
-        # TODO: init with nans?
         self.cm_points = np.zeros((self.num_cells, self.num_cells, 2))
+        self.cm_points[:] = np.nan
     
     def add_new_points(self, points: np.ndarray):
         """
@@ -48,10 +51,16 @@ class CostMap:
         points_corner = h_points_corner[:2, :]
 
         # get costmap indices to put points at
+        # TODO: refactor to reduce unecessary stuff
         ids = np.floor(points / CM_CELL_SIZE).astype(int)
         valid_mask = np.any(ids < self.num_cells, axis=0) 
         valid_ids = ids[:, valid_mask]
-        self.cm_points 
+        valid_points = points[:, valid_mask]
+        
+        # swap from x,y order to i,j order
+        self.cm_grid[valid_ids[1, :], valid_ids[0, :]] = 1
+        self.cm_points[valid_ids[1, :], valid_ids[0, :], :] = valid_points.T
+        
 
     def update_rover(self, map_to_rover: np.ndarray):
         
@@ -60,6 +69,7 @@ class CostMap:
         # propagate costmap with delta transform
         
         # split map to rover transform into map to cm and cm to rover, update each
+        ...
     
     def propagate(self, delta_tf: np.ndarray):
         
@@ -69,3 +79,4 @@ class CostMap:
         # empty costmap
         
         # add_new_points to costmap
+        ...
